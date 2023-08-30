@@ -3,17 +3,16 @@
 
   Clear-Host
   Set-Location $env:TEMP
+  $file = "Install.ps1"
 
 #Load Assembly
   [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 
-  $file = "Install.ps1"
-
+#Dialog
   $GitToken = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token")
   $GitRepor = [Microsoft.VisualBasic.Interaction]::InputBox("Github repro", "Enter the name of the private GitHub Repro")
 
-  #See Source : https://stackoverflow.com/questions/63506725/using-powershell-to-download-file-from-private-github-repository-using-oauth
-
+#See Source : https://stackoverflow.com/questions/63506725/using-powershell-to-download-file-from-private-github-repository-using-oauth
   $credentials=$GitToken
   $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
   $headers.Add("Authorization", "token $credentials")
