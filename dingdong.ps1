@@ -18,5 +18,6 @@
   $headers.Add("Authorization", "token $credentials")
   $headers.Add("Accept", "application/json")
   $download = "https://raw.githubusercontent.com/$GitRepro/main/$file"
+  Write-Host Dowloading $download 
   Invoke-WebRequest -Uri $download -Headers $headers -OutFile $file
   Invoke-expression .\$file
