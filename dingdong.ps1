@@ -17,7 +17,7 @@
   $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
   $headers.Add("Authorization", "token $credentials")
   $headers.Add("Accept", "application/json")
-  $download = "https://raw.githubusercontent.com/$GitRepro/main/$file"
+  $download = ("https://raw.githubusercontent.com/{0}/main/{1}" -f $GitRepro, $file)
   Write-Host Dowloading $download 
   Invoke-WebRequest -Uri $download -Headers $headers -OutFile $file
   Invoke-expression .\$file
