@@ -10,7 +10,7 @@
 
 #Dialog
   $GitToken = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token")
-  $GitRepor = [Microsoft.VisualBasic.Interaction]::InputBox("Github repro", "Enter the name of the private GitHub Repro")
+  $GitRepro = [Microsoft.VisualBasic.Interaction]::InputBox("Github repro", "Enter the name of the private GitHub Repro")
 
 #See Source : https://stackoverflow.com/questions/63506725/using-powershell-to-download-file-from-private-github-repository-using-oauth
   $credentials=$GitToken
