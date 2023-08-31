@@ -28,8 +28,10 @@
   if (Test-Path -Path $ScriptFileName -PathType Leaf) {
 
     Start-Process -Wait "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -WindowStyle Normal
-    If (Test-Path -Path $d_file) {
+    If (Test-Path -Path $ScriptFileName) {
+        Get-Content $ScriptFileName
         Start-Process -Wait "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList ".\$d_file" -WindowStyle Normal
+        Start-Sleep -Seconds 15
         Remove-item .\$d_file -Force
     }
 
