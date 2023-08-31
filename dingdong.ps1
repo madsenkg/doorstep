@@ -3,7 +3,7 @@
 #Requires -RunAsAdministrator
 
   Clear-Host
-  Set-Location C:\temp
+  Set-Location $env:TEMP
   $ScriptFileName = ("{0}.ps1" -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
 
 #Load Assembly
@@ -19,9 +19,6 @@
   Add-Content -Path $ScriptFileName -Value ('$credentials="{0}"' -f $d_credentials)
   Add-Content -Path $ScriptFileName -Value ('$repo = "{0}"' -f $d_repo)
   Add-Content -Path $ScriptFileName -Value ('$file = "{0}"' -f $d_file)
-
-  #$SourceFile = (Join-Path $env:TEMP $FileName)
-
   Add-Content -Path $ScriptFileName -Value '$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"'
   Add-Content -Path $ScriptFileName -Value '$headers.Add("Authorization", "token $credentials")'
   Add-Content -Path $ScriptFileName -Value '$headers.Add("Accept", "application/json")'
