@@ -9,9 +9,9 @@
     [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 
 #Dialog
-    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","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")
+    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","<paste token here>")
     $d_repo = [Microsoft.VisualBasic.Interaction]::InputBox("Github repro", "Enter the name of the private GitHub Repro <User/Repro>","madsenkg/Tokentest")
-    $d_file = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", "install.ps1")
+    $d_file = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", "install.zip")
  
     New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
     Add-Content -Path $ScriptFileName -Value 'Set-Location C:\temp'
@@ -21,9 +21,11 @@
     Add-Content -Path $ScriptFileName -Value '$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"'
     Add-Content -Path $ScriptFileName -Value '$headers.Add("Authorization", "Bearer $credentials")'
     Add-Content -Path $ScriptFileName -Value '$headers.Add("Accept", "*/*")'
-    Add-Content -Path $ScriptFileName -Value '$download = "https://raw.githubusercontent.com/$repo/main/$file"'
+    #Add-Content -Path $ScriptFileName -Value '$download = "https://raw.githubusercontent.com/$repo/main/$file"'
+    Add-Content -Path $ScriptFileName -Value '$download = "https://github.com/$repo/archive/refs/heads/main.zip"'
+    
     Add-Content -Path $ScriptFileName -Value 'Invoke-RestMethod -Uri $download -Headers $headers -Method Get -OutFile $file'
-  
+<#  
     if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
         Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -Wait
         
@@ -32,4 +34,5 @@
             Remove-item .\$d_file -Force
         }
         Remove-Item .\$ScriptFileName -Force
+#>        
     }  
