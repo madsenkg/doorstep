@@ -10,9 +10,9 @@ $authboundary = [System.Guid]::NewGuid().ToString()
 $authLF = "`r`n"
 
 $authbodyLines = (
-    #"--$authboundary",
-    #"Content-Disposition: form-data; name=`"client_id`"$authLF",
-    #$clientId,
+    "--$authboundary",
+    "Content-Disposition: form-data; name=`"client_id`"$authLF",
+    $clientId,
     "--$authboundary",
     "Content-Disposition: form-data; name=`"client_secret`"$authLF",
     $clientSecret,
