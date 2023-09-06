@@ -15,7 +15,7 @@
     $d_file        = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", "Install.ps1")
  
     New-item -Name $ScriptFileName -ItemType File -Force # | Out-Null
-    Add-Content -Path $ScriptFileName -Value 'Set-Location $env:TEMP'
+    #Add-Content -Path $ScriptFileName -Value 'Set-Location $env:TEMP'
     Add-Content -Path $ScriptFileName -Value '$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"'
     Add-Content -Path $ScriptFileName -Value ('$headers.Add("Authorization", "Bearer {0}")' -f $d_credentials)
     Add-Content -Path $ScriptFileName -Value '$headers.Add("Accept", "application/vnd.github+json")'
