@@ -25,11 +25,11 @@
     if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
         # Run Script file and remove it afterwards
         Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -Wait
-        Remove-Item .\$ScriptFileName -Force
+        #Remove-Item .\$ScriptFileName -Force
 
         #Unzip repo file and remove it
         Expand-Archive $ZipFileName -DestinationPath $ZipFolder
-        Remove-Item .\$ZipFileName -Force
+        #Remove-Item .\$ZipFileName -Force
 
         #Find file in Zipfolder set location
         Set-Location (Split-Path (Get-Childitem -Path $ZipFolder -Recurse |Where-Object {($_.name -eq $d_file)}| ForEach-Object{$_.FullName}))
@@ -37,10 +37,10 @@
         # Run install file
         If (Test-Path -Path .\$d_file) {
             Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList ".\$d_file" -WindowStyle Normal -Wait
-            Remove-item .\$d_file -Force
+            #Remove-item .\$d_file -Force
         }
 
         # Cleaning up files
         Set-Location $env:TEMP
-        Remove-item  -Path $ZipFolder -Recurse -Force 
+        #Remove-item  -Path $ZipFolder -Recurse -Force 
     }
