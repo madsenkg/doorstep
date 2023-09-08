@@ -37,16 +37,18 @@
     
     Get-ChildItem 
     
-    if (Test-Path -Path $ScriptFileName -PathType Leaf) {
+    if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
         # Run Script file and remove it afterwards
-        $x = Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList "$ScriptFileName" -Wait
+        Write-Output ("Executing following file : {0} " -f $ScriptFileName.FullName)
+        $x = Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -Wait
         $x
         #Remove-Item .\$ScriptFileName -Force
 
         #Unzip repo file and remove it
-        If (Test-Path -Path $ZipFileName -PathType Leaf) {
-        Expand-Archive .\$ZipFileName -DestinationPath $ZipFolder
-        #Remove-Item .\$ZipFileName -Force
+        If (Test-Path -Path .\$ZipFileName -PathType Leaf) {
+            Write-Output ("Executing following file : {0} " -f $ZipFileName.FullName)
+            Expand-Archive .\$ZipFileName -DestinationPath $ZipFolder
+            #Remove-Item .\$ZipFileName -Force
         }
         else {
             exit
