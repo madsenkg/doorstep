@@ -3,6 +3,7 @@
 #Requires -RunAsAdministrator
     Clear-Host
     Set-Location $env:TEMP
+
     $ScriptFileName = ("{0}.ps1" -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
     $ZipFileName    = ("{0}.zip" -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
     $ZipFolder      = ("{0}"     -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
@@ -20,7 +21,10 @@
     $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","<paste token here>")
     $d_repo        = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repo <User/Repo>","<paste repo here>")
     $d_file        = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", "Install.ps1")
- 
+
+    # start a log
+    Start-Transcript -Append -Path ("{0}_{1}.log" -f $env:COMPUTERNAME,(Get-Date -format yyyyMMdd))
+
     New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
     Add-Content -Path $ScriptFileName -Value 'Set-Location $env:TEMP'
     Add-Content -Path $ScriptFileName -Value '$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"'
@@ -52,3 +56,5 @@
         Set-Location $env:TEMP
         Remove-item -Path $ZipFolder -Recurse -Force 
     }
+
+    Stop-Transcript
