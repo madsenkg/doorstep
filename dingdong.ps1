@@ -49,12 +49,12 @@
         # Run the selected file
         If (Test-Path -Path $filename) {
             Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList "$filename" -WindowStyle Normal -Wait
-            Remove-item $filename -Force
+            #Remove-item $filename -Force
         }
 
         # Cleaning up files
         Set-Location $env:TEMP
-        Remove-item -Path $ZipFolder -Recurse -Force 
+        #Remove-item -Path $ZipFolder -Recurse -Force 
     }
 
     Stop-Transcript
