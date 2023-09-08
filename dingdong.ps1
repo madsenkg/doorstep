@@ -18,8 +18,8 @@
     [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 
     #Dialog
-    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","<paste token here>")
-    $d_repo        = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repo <User/Repo>","<paste repo here>")
+    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","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") #"<paste token here>")
+    $d_repo        = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repo <User/Repo>","madsenkg/cgi") #"<paste repo here>")
     $d_file        = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", "Install.ps1")
 
     # start a log
