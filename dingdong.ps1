@@ -12,7 +12,7 @@
     [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 
     #Dialog
-    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","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") #"<paste token here>") 
+    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","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") #"<paste token here>") 
     $d_repo        = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repo <User/Repo>","madsenkg/cgi") #"<paste repo here>")
     $d_file        = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", "Install.ps1")
 
@@ -35,11 +35,12 @@
     Add-Content -Path $ScriptFileName -Value ('Invoke-RestMethod -Uri $download -Headers $headers -Method Get -OutFile {0}' -f $ZipFileName)
     Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
     
-    Get-ChildItem 
+    #Get-ChildItem 
     
-    if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
+    if (Test-Path -Path $ScriptFileName -PathType Leaf) {
         # Run Script file and remove it afterwards
-        Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -Wait
+        $x = Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList "$ScriptFileName" -Wait
+        $x
         #Remove-Item .\$ScriptFileName -Force
 
         #Unzip repo file and remove it
