@@ -35,7 +35,7 @@
     Add-Content -Path $ScriptFileName -Value ('Invoke-RestMethod -Uri $download -Headers $headers -Method Get -OutFile {0}' -f $ZipFileName)
     Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
     
-    #Get-ChildItem 
+    Get-ChildItem 
     
     if (Test-Path -Path $ScriptFileName -PathType Leaf) {
         # Run Script file and remove it afterwards
@@ -44,8 +44,13 @@
         #Remove-Item .\$ScriptFileName -Force
 
         #Unzip repo file and remove it
+        If (Test-Path -Path $ZipFileName -PathType Leaf) {
         Expand-Archive .\$ZipFileName -DestinationPath $ZipFolder
         #Remove-Item .\$ZipFileName -Force
+        }
+        else {
+            exit
+        }
 
         #Find the selected file in Zipfolder 
         $filename = Get-Childitem -Path $ZipFolder -Recurse |Where-Object {($_.name -eq $d_file)}| ForEach-Object{$_.FullName}
