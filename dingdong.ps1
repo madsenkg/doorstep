@@ -27,11 +27,13 @@
 
     New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
     Add-Content -Path $ScriptFileName -Value 'Set-Location $env:TEMP'
+    Add-Content -Path $ScriptFileName -Value 'Start-Transcript _dingdong.log -force'
     Add-Content -Path $ScriptFileName -Value '$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"'
     Add-Content -Path $ScriptFileName -Value ('$headers.Add("Authorization", "Bearer {0}")' -f $d_credentials)
     Add-Content -Path $ScriptFileName -Value '$headers.Add("Accept", "application/vnd.github+json")'
     Add-Content -Path $ScriptFileName -Value ('$download = "https://api.github.com/repos/{0}/zipball"' -f $d_repo)
     Add-Content -Path $ScriptFileName -Value ('Invoke-RestMethod -Uri $download -Headers $headers -Method Get -OutFile {0}' -f $ZipFileName)
+    Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
     
     Get-ChildItem 
     
