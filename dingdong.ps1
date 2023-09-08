@@ -8,22 +8,22 @@
     $ZipFileName    = ("{0}.zip" -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
     $ZipFolder      = ("{0}"     -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
 
-    if (!$ScriptFileName -or !$ZipFileName -or !$ZipFolder) {
-        Write-Output ("Missing info - aborting script")
-        Start-Sleep -Seconds 5
-        exit   
-    }
-
     #Load Assembly
     [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 
     #Dialog
-    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","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") #"<paste token here>")
+    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","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") #"<paste token here>") 
     $d_repo        = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repo <User/Repo>","madsenkg/cgi") #"<paste repo here>")
     $d_file        = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", "Install.ps1")
 
+    if (!$d_credentials -or !$d_repo -or !$d_file) {
+        Write-Output ("Missing some info - aborting script")
+        Start-Sleep -Seconds 5
+        exit   
+    }
+
     # start a log
-    Start-Transcript -Append -Path ("{0}_{1}.log" -f $env:COMPUTERNAME,(Get-Date -format yyyyMMdd))
+    Start-Transcript -Append -Path ("_{0}_{1}.log" -f $env:COMPUTERNAME,(Get-Date -format yyyyMMdd))
 
     New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
     Add-Content -Path $ScriptFileName -Value 'Set-Location $env:TEMP'
