@@ -14,7 +14,7 @@
     [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 
     #Dialog
-    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token",'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') #"<paste token here>") 
+    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token",'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') #"<paste token here>") 
     $d_repo        = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repo <User/Repo>",'madsenkg/cgi') #"<paste repo here>")
     $d_file        = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", 'Install.ps1')
 
@@ -41,14 +41,14 @@
     
     if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
         # Run Script file and remove it afterwards
-        Write-Output ("Executing following file : {0} " -f $ScriptFileName.FullName)
+        Write-Output ("1. Executing following file : {0} " -f $ScriptFileName.FullName)
         $x = Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -Wait
         $x
         #Remove-Item .\$ScriptFileName -Force
 
         #Unzip repo file and remove it
         If (Test-Path -Path .\$ZipFileName -PathType Leaf) {
-            Write-Output ("Executing following file : {0} " -f $ZipFileName.FullName)
+            Write-Output ("2. Executing following file : {0} " -f $ZipFileName.FullName)
             Expand-Archive .\$ZipFileName -DestinationPath $ZipFolder
             #Remove-Item .\$ZipFileName -Force
         }
@@ -58,7 +58,7 @@
 
         #Find the selected file in Zipfolder 
         $filename = Get-Childitem -Path $ZipFolder -Recurse |Where-Object {($_.name -eq $d_file)}| ForEach-Object{$_.FullName}
-        Write-Output ("Executing following file : {0} " -f $filename)
+        Write-Output ("3. Executing following file : {0} " -f $filename)
         
         # Run the selected file
         If (Test-Path -Path $filename) {
@@ -67,7 +67,7 @@
         }
 
         # Cleaning up files
-        Set-Location $env:TEMP
+        #Set-Location $env:TEMP
         #Remove-item -Path $ZipFolder -Recurse -Force 
     }
 
