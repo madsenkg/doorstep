@@ -16,7 +16,7 @@
     #Load Assembly
     [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 
-#Dialog
+    #Dialog
     $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","<paste token here>")
     $d_repo        = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repo <User/Repo>","<paste repo here>")
     $d_file        = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", "Install.ps1")
@@ -32,11 +32,11 @@
     if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
         # Run Script file and remove it afterwards
         Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -Wait
-        Remove-Item .\$ScriptFileName -Force
+        #Remove-Item .\$ScriptFileName -Force
 
         #Unzip repo file and remove it
         Expand-Archive $ZipFileName -DestinationPath $ZipFolder
-        Remove-Item .\$ZipFileName -Force
+        #Remove-Item .\$ZipFileName -Force
 
         #Find the selected file in Zipfolder 
         $filename = Get-Childitem -Path $ZipFolder -Recurse |Where-Object {($_.name -eq $d_file)}| ForEach-Object{$_.FullName}
