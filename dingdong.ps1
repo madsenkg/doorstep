@@ -39,7 +39,7 @@
         #Remove-Item .\$ScriptFileName -Force
 
         #Unzip repo file and remove it
-        Expand-Archive $ZipFileName -DestinationPath $ZipFolder
+        Expand-Archive .\$ZipFileName -DestinationPath $ZipFolder
         #Remove-Item .\$ZipFileName -Force
 
         #Find the selected file in Zipfolder 
