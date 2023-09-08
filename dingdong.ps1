@@ -4,7 +4,9 @@
     Clear-Host
     Set-Location $env:TEMP
 
-    $ScriptFileName = ("{0}.ps1" -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
+    $TmpFileName    = [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName())
+    $ScriptFileName = ("{0}.ps1" -f $TmpFileName)
+    $LogFileName    = ("{0}.log" -f $TmpFileName)
     $ZipFileName    = ("{0}.zip" -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
     $ZipFolder      = ("{0}"     -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
 
@@ -12,9 +14,9 @@
     [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 
     #Dialog
-    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","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") #"<paste token here>") 
-    $d_repo        = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repo <User/Repo>","madsenkg/cgi") #"<paste repo here>")
-    $d_file        = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", "Install.ps1")
+    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token",'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') #"<paste token here>") 
+    $d_repo        = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repo <User/Repo>",'madsenkg/cgi') #"<paste repo here>")
+    $d_file        = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", 'Install.ps1')
 
     if (!$d_credentials -or !$d_repo -or !$d_file) {
         Write-Output ("Missing some info - aborting script")
@@ -27,7 +29,7 @@
 
     New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
     Add-Content -Path $ScriptFileName -Value 'Set-Location $env:TEMP'
-    Add-Content -Path $ScriptFileName -Value 'Start-Transcript _dingdong.log -force'
+    Add-Content -Path $ScriptFileName -Value ('Start-Transcript {0} -force' -f $LogFileName)
     Add-Content -Path $ScriptFileName -Value '$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"'
     Add-Content -Path $ScriptFileName -Value ('$headers.Add("Authorization", "Bearer {0}")' -f $d_credentials)
     Add-Content -Path $ScriptFileName -Value '$headers.Add("Accept", "application/vnd.github+json")'
