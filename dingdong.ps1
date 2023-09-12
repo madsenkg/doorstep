@@ -45,7 +45,7 @@
     Add-Content -Path $ScriptFileName -Value ('git clone --bare https://{0}:{1}@github.com/{2}.git gitrepo' -f $d_repo.split('/')[0], $d_token, $d_repo)
     Add-Content -Path $ScriptFileName -Value 'cd gitrepo'
     Add-Content -Path $ScriptFileName -Value 'git archive -o latest.zip HEAD'
-    Add-Content -Path $ScriptFileName -Value ('Expand-Archive gitrepo\latest.zip -DestinationPath ..\{0}' -f $ZipFolder)
+    Add-Content -Path $ScriptFileName -Value ('Expand-Archive latest.zip -DestinationPath ..\{0}' -f $ZipFolder)
     Add-Content -Path $ScriptFileName -Value 'cd ..'
     Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -verbose'
     #Add-Content -Path $ScriptFileName -Value '$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"'
