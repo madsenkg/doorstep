@@ -48,38 +48,25 @@
     Add-Content -Path $ScriptFileName -Value ('Expand-Archive latest.zip -DestinationPath ..\{0}' -f $ZipFolder)
     Add-Content -Path $ScriptFileName -Value 'cd ..'
     Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -recurse -Confirm:$false -verbose'
-    #Add-Content -Path $ScriptFileName -Value '$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"'
-    #Add-Content -Path $ScriptFileName -Value ('$headers.Add("Authorization", "Bearer {0}")' -f $d_credentials)
-    #Add-Content -Path $ScriptFileName -Value '$headers.Add("Accept", "application/vnd.github+json")'
-    #Add-Content -Path $ScriptFileName -Value ('$download = "https://api.github.com/repos/{0}/zipball"' -f $d_repo)
-    #Add-Content -Path $ScriptFileName -Value ('Invoke-RestMethod -Uri $download -Headers $headers -Method Get -OutFile {0}' -f $ZipFileName)
     Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
     
     if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
         # Run Script file and remove it afterwards
-        Write-Output ("1. Executing following file : {0} " -f $ScriptFileName.FullName)
+        Write-Output ("1. Executing following file : {0} " -f $ScriptFileName)
         Start-Process "powershell.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -Wait
-        #Remove-Item .\$ScriptFileName -Force
-<#
-        #Unzip repo file and remove it
-        If (Test-Path -Path .\$ZipFileName -PathType Leaf) {
-            Write-Output ("2. Executing following file : {0} " -f $ZipFileName.FullName)
-            Expand-Archive .\$ZipFileName -DestinationPath $ZipFolder
-            #Remove-Item .\$ZipFileName -Force
-            } else { exit 
-        }
-#>
+        Remove-Item .\$ScriptFileName -Force
+
         #Find the selected file in Zipfolder and Run the selected file
         $filename = Get-Childitem -Path $ZipFolder -Recurse |Where-Object {($_.name -eq $d_file)}| ForEach-Object{$_.FullName}
         If (Test-Path -Path $filename) {
-            Write-Output ("3. Executing following file : {0} " -f $filename)            
+            Write-Output ("2. Executing following file : {0} " -f $filename)            
             Start-Process "powershell" -Verb runAs -ArgumentList "$filename" -WindowStyle Normal -Wait
-            #Remove-item $filename -Force
+            Remove-item $filename -Force
         }
 
         # Cleaning up files
-        #Set-Location $env:TEMP
-        #Remove-item -Path $ZipFolder -Recurse -Force 
+        Set-Location $env:TEMP
+        Remove-item -Path $ZipFolder -Recurse -Force -Confirm:$false
     }
 
     Stop-Transcript
