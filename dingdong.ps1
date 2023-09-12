@@ -47,7 +47,7 @@
     Add-Content -Path $ScriptFileName -Value 'git archive -o latest.zip HEAD'
     Add-Content -Path $ScriptFileName -Value ('Expand-Archive latest.zip -DestinationPath ..\{0}' -f $ZipFolder)
     Add-Content -Path $ScriptFileName -Value 'cd ..'
-    Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -confirm:true -verbose'
+    Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -recurse -Confirm:$false -verbose'
     #Add-Content -Path $ScriptFileName -Value '$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"'
     #Add-Content -Path $ScriptFileName -Value ('$headers.Add("Authorization", "Bearer {0}")' -f $d_credentials)
     #Add-Content -Path $ScriptFileName -Value '$headers.Add("Accept", "application/vnd.github+json")'
