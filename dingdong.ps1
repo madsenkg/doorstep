@@ -14,36 +14,51 @@
     [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 
     #Dialog
-    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token",'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') #"<paste token here>") 
-    $d_repo        = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repo <User/Repo>",'madsenkg/cgi') #"<paste repo here>")
-    $d_file        = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", 'Install.ps1')
+    $d_token = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token",'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') #"<paste token here>") 
+    $d_repo  = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repository <User>/<repo>",'madsenkg/Tokentest') #"<paste repo here>")
+    $d_file  = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", 'Install.ps1')
 
-    if (!$d_credentials -or !$d_repo -or !$d_file) {
+    if (!$d_token -or !$d_repo -or !$d_file) {
         Write-Output ("Missing some info - aborting script")
         Start-Sleep -Seconds 5
         exit   
     }
-
+    
+    if (!($d_repo -match "[a-zA-Z0-9]\/[a-zA-Z0-9]" )) {
+        Write-Output "Repo string is not valid please use <user>/<repo>"
+        Start-Sleep -Seconds 5
+        exit
+    }
+    
     # start a log
     Start-Transcript -Append -Path ("_{0}_{1}.log" -f $env:COMPUTERNAME,(Get-Date -format yyyyMMdd))
-
-    New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
-    Add-Content -Path $ScriptFileName -Value 'Set-Location $env:TEMP'
-    Add-Content -Path $ScriptFileName -Value ('Start-Transcript {0} -force' -f $LogFileName)
-    Add-Content -Path $ScriptFileName -Value '$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"'
-    Add-Content -Path $ScriptFileName -Value ('$headers.Add("Authorization", "Bearer {0}")' -f $d_credentials)
-    Add-Content -Path $ScriptFileName -Value '$headers.Add("Accept", "application/vnd.github+json")'
-    Add-Content -Path $ScriptFileName -Value ('$download = "https://api.github.com/repos/{0}/zipball"' -f $d_repo)
-    Add-Content -Path $ScriptFileName -Value ('Invoke-RestMethod -Uri $download -Headers $headers -Method Get -OutFile {0}' -f $ZipFileName)
-    Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
     
-    Get-ChildItem 
+    New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
+    Add-Content -Path $ScriptFileName -Value ('Start-Transcript {0} -force' -f $LogFileName)
+    Add-Content -Path $ScriptFileName -Value 'Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue'
+    Add-Content -Path $ScriptFileName -Value '$env:Path += ";%ALLUSERSPROFILE%\chocolatey\bin"'
+    Add-Content -Path $ScriptFileName -Value 'choco install git -y -v -acceptlicens'
+    Add-Content -Path $ScriptFileName -Value 'Set-Location $env:TEMP'
+    Add-Content -Path $ScriptFileName -Value ('md {0}' -f $ZipFolder)
+    Add-Content -Path $ScriptFileName -Value 'md gitrepo'
+    Add-Content -Path $ScriptFileName -Value 'git config --global --add safe.directory $env:TEMP/gitrepo'
+    Add-Content -Path $ScriptFileName -Value ('git clone --bare https://{0}:{1}@github.com/{2}.git gitrepo' -f $d_repo.split('/')[0], $d_token, $d_repo)
+    Add-Content -Path $ScriptFileName -Value 'cd gitrepo'
+    Add-Content -Path $ScriptFileName -Value 'git archive -o latest.zip HEAD'
+    Add-Content -Path $ScriptFileName -Value ('Expand-Archive gitrepo\latest.zip -DestinationPath ..\{0}' -f $ZipFolder)
+    Add-Content -Path $ScriptFileName -Value 'cd ..'
+    Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -verbose'
+    #Add-Content -Path $ScriptFileName -Value '$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"'
+    #Add-Content -Path $ScriptFileName -Value ('$headers.Add("Authorization", "Bearer {0}")' -f $d_credentials)
+    #Add-Content -Path $ScriptFileName -Value '$headers.Add("Accept", "application/vnd.github+json")'
+    #Add-Content -Path $ScriptFileName -Value ('$download = "https://api.github.com/repos/{0}/zipball"' -f $d_repo)
+    #Add-Content -Path $ScriptFileName -Value ('Invoke-RestMethod -Uri $download -Headers $headers -Method Get -OutFile {0}' -f $ZipFileName)
+    Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
     
     if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
         # Run Script file and remove it afterwards
         Write-Output ("1. Executing following file : {0} " -f $ScriptFileName.FullName)
-        $x = Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -Wait
-        $x
+        Start-Process "powershell.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -Wait
         #Remove-Item .\$ScriptFileName -Force
 
         #Unzip repo file and remove it
@@ -62,7 +77,7 @@
         
         # Run the selected file
         If (Test-Path -Path $filename) {
-            Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList "$filename" -WindowStyle Normal -Wait
+            Start-Process "powershell" -Verb runAs -ArgumentList "$filename" -WindowStyle Normal -Wait
             #Remove-item $filename -Force
         }
 
