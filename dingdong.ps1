@@ -15,7 +15,7 @@
 
     #Dialog
     $d_token = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","<paste token here>") 
-    $d_repo  = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repository <User>/<repo>",'madsenkg/Tokentest') #"<paste repo here>")
+    $d_repo  = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repository <User>/<repo>","<paste repo here>")
     $d_file  = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", 'Install.ps1')
 
     if (!$d_token -or !$d_repo -or !$d_file) {
@@ -70,3 +70,7 @@
     }
 
     Stop-Transcript
+
+    Write-output "Closing session in 10 sec."
+    Start-Sleep -Seconds 10
+    exit
