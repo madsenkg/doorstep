@@ -75,11 +75,10 @@ if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
     Write-Output ("2. Found file to execute : {0} " -f $filename)
     If (Test-Path $filename) {
         Write-Output ("3. Executing following file : {0} " -f $filename)            
-        Start-Process "powershell" -Verb runAs -ArgumentList .\$filename -WindowStyle Normal -Wait
+        Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$filename -WindowStyle Normal -Wait
     }
 
     # Cleaning up files
-    #Set-Location $env:TEMP
     #Remove-item $ZipFolder -Recurse -Force -Confirm:$false
 }
 
