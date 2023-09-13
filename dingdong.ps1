@@ -67,15 +67,15 @@ Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
 if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
     # Run Script file and remove it afterwards
     Write-Output ("1. Executing following file : {0} " -f $ScriptFileName)
-    Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$ScriptFileName -Wait
-    #Remove-Item .\$ScriptFileName -Force
+    Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$ScriptFileName -WindowStyle Hidden -Wait
+    Remove-Item .\$ScriptFileName -Force
 
     #Find the selected file in Zipfolder and Run the selected file
     $filename = Get-Childitem -Path .\$ZipFolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
     Write-Output ("2. Found file to execute : {0} " -f $filename)
     If (Test-Path $filename) {
         Write-Output ("3. Executing following file : {0} " -f $filename)            
-        Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$filename -WindowStyle Normal -Wait
+        Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$filename -WindowStyle Hidden -Wait
     }
 
     # Cleaning up files
