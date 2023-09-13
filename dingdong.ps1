@@ -61,7 +61,7 @@ Add-Content -Path $ScriptFileName -Value 'cd gitrepo'
 Add-Content -Path $ScriptFileName -Value ('git archive -o {0} HEAD' -f $ZipFileName)
 Add-Content -Path $ScriptFileName -Value ('Expand-Archive {0} -DestinationPath ..\{1}' -f $ZipFileName, $ZipFolder)
 Add-Content -Path $ScriptFileName -Value 'cd ..'
-Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -recurse -Confirm:$false -verbose'
+#Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -recurse -Confirm:$false -verbose'
 Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
 
 # Check if script file exists
