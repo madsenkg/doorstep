@@ -1,74 +1,90 @@
 #Copyrights CGI Demnark A/S
 #See Source : https://stackoverflow.com/questions/63506725/using-powershell-to-download-file-from-private-github-repository-using-oauth
 #Requires -RunAsAdministrator
-    Clear-Host
+
+Clear-Host
+
+# Create Tmp folder for the script
+$TmpFolder      = ("C:\Temp\{0}.tmp"     -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
+New-Item -Path $TmpFolder -ItemType "directory" -Force -Confirm:$false
+Set-Location $TmpFolder
+
+# start a log
+Start-Transcript -Append -Path ("_{0}_{1}.log" -f $env:COMPUTERNAME,(Get-Date -format yyyyMMdd))
+Write-output "Temp-folder is : ", Get-location
+
+$TmpFileName    = [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName())
+$ScriptFileName = ("{0}.ps1" -f $TmpFileName)
+$LogFileName    = ("{0}.log" -f $TmpFileName)
+$ZipFileName    = ("{0}.zip" -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
+$ZipFolder      = ("{0}"     -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
+
+#Load Assembly
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
+
+#Dialog
+$d_token = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","<paste token here>") 
+$d_repo  = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repository <User>/<repo>","<paste repo here>")
+$d_file  = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", 'Install.ps1')
+
+# Testing format of repo
+if (!($d_repo -match "[a-zA-Z0-9]\/[a-zA-Z0-9]" )) {
+    Write-Output "Repo string is not valid please use <user>/<repo>"
+    Start-Sleep -Seconds 5
+    exit
+}
+
+# Testing format of file
+if (!($d_file -match "[a-zA-Z0-9].ps1" )) {
+    Write-Output "file string is not valid please use <filename>.ps1"
+    Start-Sleep -Seconds 5
+    exit
+}
+# Validating 
+if (!$d_token -or !$d_repo -or !$d_file) {
+    Write-Output ("Missing some info - aborting script")
+    Start-Sleep -Seconds 5
+    exit   
+}
+
+New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
+Add-Content -Path $ScriptFileName -Value ('Start-Transcript {0} -force' -f $LogFileName)
+Add-Content -Path $ScriptFileName -Value 'Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue'
+Add-Content -Path $ScriptFileName -Value '$env:Path += ";%ALLUSERSPROFILE%\chocolatey\bin"'
+Add-Content -Path $ScriptFileName -Value 'choco install git -y -v -acceptlicens'
+Add-Content -Path $ScriptFileName -Value ('Set-Location {0}' -f $TmpFolder)
+Add-Content -Path $ScriptFileName -Value ('md {0}' -f $ZipFolder)
+Add-Content -Path $ScriptFileName -Value 'md gitrepo'
+Add-Content -Path $ScriptFileName -Value ('git config --global --add safe.directory {0}/gitrepo' -f $TmpFolder)
+Add-Content -Path $ScriptFileName -Value ('git clone --bare https://{0}:{1}@github.com/{2}.git gitrepo' -f $d_repo.split('/')[0], $d_token, $d_repo)
+Add-Content -Path $ScriptFileName -Value 'cd gitrepo'
+Add-Content -Path $ScriptFileName -Value 'git archive -o {0} HEAD' -f $ZipFileName
+Add-Content -Path $ScriptFileName -Value ('Expand-Archive {0} -DestinationPath ..\{1}' -f $ZipFileName, $ZipFolder)
+Add-Content -Path $ScriptFileName -Value 'cd ..'
+Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -recurse -Confirm:$false -verbose'
+Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
+
+if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
+    # Run Script file and remove it afterwards
+    Write-Output ("1. Executing following file : {0} " -f $ScriptFileName)
+    Start-Process "powershell.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -Wait
+    Remove-Item .\$ScriptFileName -Force
+
+    #Find the selected file in Zipfolder and Run the selected file
+    $filename = Get-Childitem -Path $ZipFolder -Recurse |Where-Object {($_.name -eq $d_file)}| ForEach-Object{$_.FullName}
+    If (Test-Path -Path $filename) {
+        Write-Output ("2. Executing following file : {0} " -f $filename)            
+        Start-Process "powershell" -Verb runAs -ArgumentList "$filename" -WindowStyle Normal -Wait
+        Remove-item $filename -Force
+    }
+
+    # Cleaning up files
     Set-Location $env:TEMP
+    Remove-item -Path $ZipFolder -Recurse -Force -Confirm:$false
+}
 
-    $TmpFileName    = [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName())
-    $ScriptFileName = ("{0}.ps1" -f $TmpFileName)
-    $LogFileName    = ("{0}.log" -f $TmpFileName)
-    $ZipFileName    = ("{0}.zip" -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
-    $ZipFolder      = ("{0}"     -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
+Stop-Transcript
 
-    #Load Assembly
-    [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
-
-    #Dialog
-    $d_credentials = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token",'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') #"<paste token here>") 
-    $d_repo        = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repo <User/Repo>",'madsenkg/cgi') #"<paste repo here>")
-    $d_file        = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", 'Install.ps1')
-
-    if (!$d_credentials -or !$d_repo -or !$d_file) {
-        Write-Output ("Missing some info - aborting script")
-        Start-Sleep -Seconds 5
-        exit   
-    }
-
-    # start a log
-    Start-Transcript -Append -Path ("_{0}_{1}.log" -f $env:COMPUTERNAME,(Get-Date -format yyyyMMdd))
-
-    New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
-    Add-Content -Path $ScriptFileName -Value 'Set-Location $env:TEMP'
-    Add-Content -Path $ScriptFileName -Value ('Start-Transcript {0} -force' -f $LogFileName)
-    Add-Content -Path $ScriptFileName -Value '$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"'
-    Add-Content -Path $ScriptFileName -Value ('$headers.Add("Authorization", "Bearer {0}")' -f $d_credentials)
-    Add-Content -Path $ScriptFileName -Value '$headers.Add("Accept", "application/vnd.github+json")'
-    Add-Content -Path $ScriptFileName -Value ('$download = "https://api.github.com/repos/{0}/zipball"' -f $d_repo)
-    Add-Content -Path $ScriptFileName -Value ('Invoke-RestMethod -Uri $download -Headers $headers -Method Get -OutFile {0}' -f $ZipFileName)
-    Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
-    
-    Get-ChildItem 
-    
-    if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
-        # Run Script file and remove it afterwards
-        Write-Output ("1. Executing following file : {0} " -f $ScriptFileName.FullName)
-        $x = Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -Wait
-        $x
-        #Remove-Item .\$ScriptFileName -Force
-
-        #Unzip repo file and remove it
-        If (Test-Path -Path .\$ZipFileName -PathType Leaf) {
-            Write-Output ("2. Executing following file : {0} " -f $ZipFileName.FullName)
-            Expand-Archive .\$ZipFileName -DestinationPath $ZipFolder
-            #Remove-Item .\$ZipFileName -Force
-        }
-        else {
-            exit
-        }
-
-        #Find the selected file in Zipfolder 
-        $filename = Get-Childitem -Path $ZipFolder -Recurse |Where-Object {($_.name -eq $d_file)}| ForEach-Object{$_.FullName}
-        Write-Output ("3. Executing following file : {0} " -f $filename)
-        
-        # Run the selected file
-        If (Test-Path -Path $filename) {
-            Start-Process "C:\Program Files\PowerShell\7\pwsh.exe" -Verb runAs -ArgumentList "$filename" -WindowStyle Normal -Wait
-            #Remove-item $filename -Force
-        }
-
-        # Cleaning up files
-        #Set-Location $env:TEMP
-        #Remove-item -Path $ZipFolder -Recurse -Force 
-    }
-
-    Stop-Transcript
+Write-output "Closing session in 10 sec."
+Start-Sleep -Seconds 10
+exit
