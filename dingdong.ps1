@@ -78,13 +78,9 @@ if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
         Remove-item $filename -Force
     }
 
-    # Cleaning up files
-    Set-Location $env:TEMP
-    Remove-item -Path $ZipFolder -Recurse -Force -Confirm:$false
-}
+        # Cleaning up files
+        #Set-Location $env:TEMP
+        #Remove-item -Path $ZipFolder -Recurse -Force 
+    }
 
-Stop-Transcript
-
-Write-output "Closing session in 10 sec."
-Start-Sleep -Seconds 10
-exit
+    Stop-Transcript
