@@ -60,26 +60,26 @@ Add-Content -Path $ScriptFileName -Value 'cd gitrepo'
 Add-Content -Path $ScriptFileName -Value ('git archive -o {0} HEAD' -f $ZipFileName)
 Add-Content -Path $ScriptFileName -Value ('Expand-Archive {0} -DestinationPath ..\zipfolder' -f $ZipFileName)
 Add-Content -Path $ScriptFileName -Value 'cd ..'
-#Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -recurse -Confirm:$false -verbose'
+Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -recurse -Confirm:$false -verbose'
 Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
 
 # Check if script file exists
 if (Test-Path $ScriptFileName -PathType Leaf) {
     # Run Script file and remove it afterwards
-    Write-Output ("1. Executing following file : {0} " -f $ScriptFileName)
+    #Write-Output ("1. Executing following file : {0} " -f $ScriptFileName)
     Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$ScriptFileName -WindowStyle Normal -Wait
-    #Remove-Item .\$ScriptFileName -Force
+    Remove-Item .\$ScriptFileName -Force
 
     #Find the selected file in Zipfolder and Run the selected file
     $filename = Get-Childitem -Path .\zipfolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
-    Write-Output ("2. Found file to execute : {0} " -f $filename)
+    #Write-Output ("2. Found file to execute : {0} " -f $filename)
     If (Test-Path $filename -PathType Leaf) {
         #Write-Output ("3. Executing following file : {0} " -f $filename)            
         Start-Process "powershell.exe" -Verb runAs -ArgumentList $filename -WindowStyle Normal -Wait
     }
 
     # Cleaning up files
-    #Remove-item $ZipFolder -Recurse -Force -Confirm:$false
+    Remove-item $ZipFolder -Recurse -Force -Confirm:$false
 }
 
 Stop-Transcript
