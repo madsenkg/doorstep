@@ -17,7 +17,6 @@ $TmpFileName    = [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]
 $ScriptFileName = ("{0}.ps1" -f $TmpFileName)
 $LogFileName    = ("{0}.log" -f $TmpFileName)
 $ZipFileName    = ("{0}.zip" -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
-$ZipFolder      = ("{0}"     -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
 
 #Load Assembly
 [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
@@ -53,13 +52,13 @@ Add-Content -Path $ScriptFileName -Value 'Invoke-Expression (new-object net.webc
 Add-Content -Path $ScriptFileName -Value '$env:Path += ";%ALLUSERSPROFILE%\chocolatey\bin"'
 Add-Content -Path $ScriptFileName -Value 'choco install git -y -v -acceptlicens'
 Add-Content -Path $ScriptFileName -Value ('Set-Location {0}' -f $TmpFolder)
-Add-Content -Path $ScriptFileName -Value ('md {0}' -f $ZipFolder)
+Add-Content -Path $ScriptFileName -Value 'md zipfolder' 
 Add-Content -Path $ScriptFileName -Value 'md gitrepo'
 Add-Content -Path $ScriptFileName -Value ('git config --global --add safe.directory {0}/gitrepo' -f $TmpFolder)
 Add-Content -Path $ScriptFileName -Value ('git clone --bare https://{0}:{1}@github.com/{2}.git gitrepo' -f $d_repo.split('/')[0], $d_token, $d_repo)
 Add-Content -Path $ScriptFileName -Value 'cd gitrepo'
 Add-Content -Path $ScriptFileName -Value ('git archive -o {0} HEAD' -f $ZipFileName)
-Add-Content -Path $ScriptFileName -Value ('Expand-Archive {0} -DestinationPath ..\{1}' -f $ZipFileName, $ZipFolder)
+Add-Content -Path $ScriptFileName -Value ('Expand-Archive {0} -DestinationPath ..\zipfolder' -f $ZipFileName)
 Add-Content -Path $ScriptFileName -Value 'cd ..'
 #Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -recurse -Confirm:$false -verbose'
 Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
@@ -72,7 +71,7 @@ if (Test-Path $ScriptFileName -PathType Leaf) {
     #Remove-Item .\$ScriptFileName -Force
 
     #Find the selected file in Zipfolder and Run the selected file
-    $filename = Get-Childitem -Path .\$ZipFolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
+    $filename = Get-Childitem -Path .\zipfolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
     Write-Output ("2. Found file to execute : {0} " -f $filename)
     If (Test-Path $filename -PathType Leaf) {
         #Write-Output ("3. Executing following file : {0} " -f $filename)            
