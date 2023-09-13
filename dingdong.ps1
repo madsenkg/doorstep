@@ -72,7 +72,7 @@ if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
 
     #Find the selected file in Zipfolder and Run the selected file
     $filename = Get-Childitem -Path .\$ZipFolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
-    Write-Output ("2 Found file to execute : {0} " -f $filename)
+    Write-Output ("2. Found file to execute : {0} " -f $filename)
     If (Test-Path $filename) {
         Write-Output ("3. Executing following file : {0} " -f $filename)            
         Start-Process "powershell" -Verb runAs -ArgumentList .\$filename -WindowStyle Normal -Wait
@@ -81,7 +81,7 @@ if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
 
     # Cleaning up files
     #Set-Location $env:TEMP
-    Remove-item $ZipFolder -Recurse -Force -Confirm:$false
+    #Remove-item $ZipFolder -Recurse -Force -Confirm:$false
 }
 
 Stop-Transcript
