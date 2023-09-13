@@ -80,7 +80,7 @@ if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
 
     # Cleaning up files
     #Set-Location $env:TEMP
-    Remove-item -Path $ZipFolder -Recurse -Force -Confirm:$false
+    #Remove-item -Path $ZipFolder -Recurse -Force -Confirm:$false
 }
 
 Stop-Transcript
