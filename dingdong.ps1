@@ -76,7 +76,6 @@ if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
     If (Test-Path $filename) {
         Write-Output ("3. Executing following file : {0} " -f $filename)            
         Start-Process "powershell" -Verb runAs -ArgumentList .\$filename -WindowStyle Normal -Wait
-        Remove-item $filename -Force -Confirm:$false
     }
 
     # Cleaning up files
