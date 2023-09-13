@@ -79,7 +79,7 @@ if (Test-Path $ScriptFileName -PathType Leaf) {
     }
 
     # Cleaning up files
-    Remove-item $ZipFolder -Recurse -Force -Confirm:$false
+    Remove-item ./zipfolder -Recurse -Force -Confirm:$false
 }
 
 Stop-Transcript
