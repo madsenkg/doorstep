@@ -11,7 +11,7 @@ Set-Location $TmpFolder
 
 # start a log
 Start-Transcript -Append -Path ("_{0}_{1}.log" -f $env:COMPUTERNAME,(Get-Date -format yyyyMMdd))
-Write-output ("Temp-folder is : {0}" -f $TmpFolder)
+#Write-output ("Temp-folder is : {0}" -f $TmpFolder)
 
 $TmpFileName    = [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName())
 $ScriptFileName = ("{0}.ps1" -f $TmpFileName)
@@ -67,15 +67,15 @@ Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
 # Check if script file exists
 if (Test-Path $ScriptFileName -PathType Leaf) {
     # Run Script file and remove it afterwards
-    Write-Output ("1. Executing following file : {0} " -f $ScriptFileName)
+    #Write-Output ("1. Executing following file : {0} " -f $ScriptFileName)
     Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$ScriptFileName -WindowStyle Hidden -Wait
     Remove-Item .\$ScriptFileName -Force
 
     #Find the selected file in Zipfolder and Run the selected file
     $filename = Get-Childitem -Path .\$ZipFolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
-    Write-Output ("2. Found file to execute : {0} " -f $filename)
+    #Write-Output ("2. Found file to execute : {0} " -f $filename)
     If (Test-Path $filename -PathType Leaf) {
-        Write-Output ("3. Executing following file : {0} " -f $filename)            
+        #Write-Output ("3. Executing following file : {0} " -f $filename)            
         Start-Process "powershell.exe" -Verb runAs -ArgumentList $filename -WindowStyle Hidden -Wait
     }
 
