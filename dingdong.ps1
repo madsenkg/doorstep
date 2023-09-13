@@ -69,7 +69,7 @@ if (Test-Path $ScriptFileName -PathType Leaf) {
     # Run Script file and remove it afterwards
     #Write-Output ("1. Executing following file : {0} " -f $ScriptFileName)
     Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$ScriptFileName -WindowStyle Normal -Wait
-    Remove-Item .\$ScriptFileName -Force
+    #Remove-Item .\$ScriptFileName -Force
 
     #Find the selected file in Zipfolder and Run the selected file
     $filename = Get-Childitem -Path .\$ZipFolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
@@ -80,7 +80,7 @@ if (Test-Path $ScriptFileName -PathType Leaf) {
     }
 
     # Cleaning up files
-    Remove-item $ZipFolder -Recurse -Force -Confirm:$false
+    #Remove-item $ZipFolder -Recurse -Force -Confirm:$false
 }
 
 Stop-Transcript
