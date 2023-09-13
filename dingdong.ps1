@@ -58,7 +58,7 @@ Add-Content -Path $ScriptFileName -Value 'md gitrepo'
 Add-Content -Path $ScriptFileName -Value ('git config --global --add safe.directory {0}/gitrepo' -f $TmpFolder)
 Add-Content -Path $ScriptFileName -Value ('git clone --bare https://{0}:{1}@github.com/{2}.git gitrepo' -f $d_repo.split('/')[0], $d_token, $d_repo)
 Add-Content -Path $ScriptFileName -Value 'cd gitrepo'
-Add-Content -Path $ScriptFileName -Value 'git archive -o {0} HEAD' -f $ZipFileName
+Add-Content -Path $ScriptFileName -Value ('git archive -o {0} HEAD' -f $ZipFileName)
 Add-Content -Path $ScriptFileName -Value ('Expand-Archive {0} -DestinationPath ..\{1}' -f $ZipFileName, $ZipFolder)
 Add-Content -Path $ScriptFileName -Value 'cd ..'
 Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -recurse -Confirm:$false -verbose'
@@ -66,15 +66,16 @@ Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
 
 if (Test-Path -Path .\$ScriptFileName -PathType Leaf) {
     # Run Script file and remove it afterwards
-    Write-Output ("1. Executing following file : {0} " -f $ScriptFileName)
+    Write-Output ("1. Executing following file : {0} " -f $ScriptFileName.FullName)
     Start-Process "powershell.exe" -Verb runAs -ArgumentList ".\$ScriptFileName" -Wait
     Remove-Item .\$ScriptFileName -Force
 
     #Find the selected file in Zipfolder and Run the selected file
     $filename = Get-Childitem -Path $ZipFolder -Recurse |Where-Object {($_.name -eq $d_file)}| ForEach-Object{$_.FullName}
-    If (Test-Path -Path $filename) {
-        Write-Output ("2. Executing following file : {0} " -f $filename)            
-        Start-Process "powershell" -Verb runAs -ArgumentList "$filename" -WindowStyle Normal -Wait
+    Write-Output ("2. Found file to execute : {0} " -f $filename.FullName)       
+    If (Test-Path -Path $filename.FullName) {
+        Write-Output ("3. Executing following file : {0} " -f $filename)            
+        Start-Process "powershell" -Verb runAs -ArgumentList $filename.FullName -WindowStyle Normal -Wait
         Remove-item $filename -Force
     }
 
