@@ -54,21 +54,16 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
         Start-Sleep -Seconds 5
         exit   
     }
-    Write-output "Input - OK !"
+    Write-output "Validation - OK !"
 
     # Install git
-    Write-output "Installing GIT..."    
+    Write-output "Installing GIT... please wait !"    
     choco install git -y -v -acceptlicens
 
     # Creating script
     Write-output "Now creating script..."
     New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
     Add-Content -Path $ScriptFileName -Value ('Start-Transcript {0} -force' -f $LogFileName)
-#    Add-Content -Path $ScriptFileName -Value 'Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1'
-#    Add-Content -Path $ScriptFileName -Value 'refreshenv'
-#    Add-Content -Path $ScriptFileName -Value 'Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue'
-#    Add-Content -Path $ScriptFileName -Value '$env:Path += "%programdata%\chocolatey\bin;"'    
-#    Add-Content -Path $ScriptFileName -Value 'choco install git -y -v -acceptlicens'
     Add-Content -Path $ScriptFileName -Value ('Set-Location {0}' -f $TmpFolder)
     Add-Content -Path $ScriptFileName -Value 'md zipfolder' 
     Add-Content -Path $ScriptFileName -Value 'md gitrepo'
@@ -84,7 +79,7 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
     # Check if script file exists
     if (Test-Path $ScriptFileName -PathType Leaf) {
         # Run Script file and remove it afterwards
-        Write-Output ("Executing script : {0} " -f $ScriptFileName)
+        Write-Output ("Running script : {0} " -f $ScriptFileName)
         Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$ScriptFileName -WindowStyle Normal -Wait
         Remove-Item .\$ScriptFileName -Force -Confirm:$true
 
