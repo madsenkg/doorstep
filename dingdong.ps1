@@ -62,7 +62,9 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
     Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue
     $env:Path += ";%PROGRAMDATA%\chocolatey\bin"
     choco install git -y -v -acceptlicens
-
+    Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+    refreshenv
+    
     # Creating script
     Write-output "Now creating script..."
     New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
