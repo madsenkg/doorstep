@@ -8,9 +8,10 @@ Clear-Host
 $DotNetVersion = Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -Recurse | Get-ItemProperty -Name version -EA 0 | Where { $_.PSChildName -Match '^(?!S)\p{L}'} | Select PSChildName, version
 
 if ($DotNetVersion.version.Item(0) -gt 4.8) {
-    Write-output ".NET version is good !"    
+    Write-output ".NET version is good !"
     $DotNetVersion
-
+    Write-output "----------------------"
+    
     # Create Tmp folder for the script
     $TmpFolder      = ("C:\Temp\{0}.tmp"     -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
     New-Item -Path $TmpFolder -ItemType "directory" -Force -Confirm:$false | Out-Null
@@ -56,9 +57,11 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
     Write-output "Input - OK !"
 
     # Creating script
-    Write-output "Creating script..."
+    Write-output "Now creating script..."
     New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
     Add-Content -Path $ScriptFileName -Value ('Start-Transcript {0} -force' -f $LogFileName)
+    Add-Content -Path $ScriptFileName -Value 'Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue'
+    Add-Content -Path $ScriptFileName -Value '$env:Path += ";%ALLUSERSPROFILE%\chocolatey\bin"'    
     Add-Content -Path $ScriptFileName -Value 'choco install git -y -v -acceptlicens'
     Add-Content -Path $ScriptFileName -Value ('Set-Location {0}' -f $TmpFolder)
     Add-Content -Path $ScriptFileName -Value 'md zipfolder' 
@@ -77,7 +80,7 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
         # Run Script file and remove it afterwards
         Write-Output ("Executing script : {0} " -f $ScriptFileName)
         Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$ScriptFileName -WindowStyle Normal -Wait
-        Remove-Item .\$ScriptFileName -Force
+        Remove-Item .\$ScriptFileName -Force -Confirm:$true
 
         #Find the selected file in Zipfolder and Run the selected file
         $filename = Get-Childitem -Path .\zipfolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
@@ -87,7 +90,7 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
         }
 
         # Cleaning up files
-        Remove-item .\zipfolder -Recurse -Force -Confirm:$false
+        Remove-item .\zipfolder -Recurse -Force -Confirm:$true
     }
 
 } else {
