@@ -101,7 +101,11 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
     Write-Output "-- REQUIRED INSTALLATION OF .NET 4.8 - Start Installing --"
     Write-Output "-- THIS MIGHT TAKE A MOMENT - PLEASE WAIT 5 min or more --"
     $DotNetVersion
-    Invoke-Expression (new-object net.webclient).DownloadString("https://go.microsoft.com/fwlink/?linkid=2088631") -WarningAction SilentlyContinue
+    Write-Output "-----------------------------------------------------------"
+    Write-Output "-- Download .NET 4.8 Package ------------------------------"
+    Invoke-WebRequest https://go.microsoft.com/fwlink/?linkid=2088631 -OutFile $env:temp\dotnet.4.8.exe
+    Write-Output "-- Installing .NET 4.8 Package ----------------------------"    
+    Start-Process $env:temp\dotnet.4.8.exe -ArgumentList "/norestart" -Wait
     Write-Output "-----------------------------------------------------------"
     Write-Output "After Installing .NET 4.8 - It's required to restart the VM"
     Write-Output "Restarting in 10 Sec"
