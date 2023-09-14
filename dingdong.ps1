@@ -9,15 +9,16 @@ $DotNetVersion = Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP
 
 if ($DotNetVersion.version.Item(0) -gt 4.8) {
     Write-output ".NET version is good !"    
+    $DotNetVersion
 
     # Create Tmp folder for the script
     $TmpFolder      = ("C:\Temp\{0}.tmp"     -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
-    New-Item -Path $TmpFolder -ItemType "directory" -Force -Confirm:$false
+    New-Item -Path $TmpFolder -ItemType "directory" -Force -Confirm:$false | Out-Null
     Set-Location $TmpFolder
 
     # start a log
     Start-Transcript -Append -Path ("_{0}_{1}.log" -f $env:COMPUTERNAME,(Get-Date -format yyyyMMdd))
-    #Write-output ("Temp-folder is : {0}" -f $TmpFolder)
+    Write-output ("Temp-folder is : {0}" -f $TmpFolder)
 
     $TmpFileName    = [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName())
     $ScriptFileName = ("{0}.ps1" -f $TmpFileName)
@@ -32,6 +33,7 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
     $d_repo  = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repository <User>/<repo>","<paste repo here>")
     $d_file  = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", 'Install.ps1')
 
+    Write-output "Validating input..."
     # Testing format of repo
     if (!($d_repo -match "[a-zA-Z0-9]\/[a-zA-Z0-9]" )) {
         Write-Output "Repo string is not valid please use <user>/<repo>"
@@ -51,7 +53,10 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
         Start-Sleep -Seconds 5
         exit   
     }
+    Write-output "Input - OK !"
 
+    # Creating script
+    Write-output "Creating script..."
     New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
     Add-Content -Path $ScriptFileName -Value ('Start-Transcript {0} -force' -f $LogFileName)
     Add-Content -Path $ScriptFileName -Value 'choco install git -y -v -acceptlicens'
@@ -70,15 +75,14 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
     # Check if script file exists
     if (Test-Path $ScriptFileName -PathType Leaf) {
         # Run Script file and remove it afterwards
-        #Write-Output ("1. Executing following file : {0} " -f $ScriptFileName)
+        Write-Output ("Executing script : {0} " -f $ScriptFileName)
         Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$ScriptFileName -WindowStyle Normal -Wait
         Remove-Item .\$ScriptFileName -Force
 
         #Find the selected file in Zipfolder and Run the selected file
         $filename = Get-Childitem -Path .\zipfolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
-        #Write-Output ("2. Found file to execute : {0} " -f $filename)
+        Write-Output ("Execute Install script : {0} " -f $filename)        
         If (Test-Path $filename -PathType Leaf) {
-            #Write-Output ("3. Executing following file : {0} " -f $filename)            
             Start-Process "powershell.exe" -Verb runAs -ArgumentList $filename -WindowStyle Normal -Wait
         }
 
@@ -89,7 +93,7 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
 } else {
     Write-Output "-- REQUIRED INSTALLATION OF .NET 4.8 - Install of Chocol --"
     $DotNetVersion
-    Install-PackageProvider -Name NuGet -Scope AllUsers -Confirm:$false  -Force
+    Install-PackageProvider -Name NuGet -Scope AllUsers -Confirm:$false -Force
     Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue
     $env:Path += ";%ALLUSERSPROFILE%\chocolatey\bin"
    
