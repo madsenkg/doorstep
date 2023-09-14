@@ -55,9 +55,12 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
         exit   
     }
     Write-output "Validation - OK !"
-
+    
     # Install git
-    Write-output "Installing GIT... please wait !"    
+    Write-output "Installing Chocolatey and GIT... please wait !"
+    Install-PackageProvider -Name NuGet -Scope CurrentUser -Confirm:$false -Force
+    Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue
+    $env:Path += ";%PROGRAMDATA%\chocolatey\bin"
     choco install git -y -v -acceptlicens
 
     # Creating script
@@ -95,13 +98,10 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
     }
 
 } else {
-    Write-Output "-- REQUIRED INSTALLATION OF .NET 4.8 - Install of Chocol --"
+    Write-Output "-- REQUIRED INSTALLATION OF .NET 4.8 - Start Installing --"
+    Write-Output "-- THIS MIGHT TAKE A MOMENT - PLEASE WAIT 5 min or more --"
     $DotNetVersion
-    Install-PackageProvider -Name NuGet -Scope AllUsers -Confirm:$false -Force
-    Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue
-    $env:Path += "%programdata%\chocolatey\bin;"
-    Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1 -Force
-    refreshenv | Out-Null
+    Invoke-Expression (new-object net.webclient).DownloadString("https://go.microsoft.com/fwlink/?linkid=2088631") -WarningAction SilentlyContinue
     Write-Output "-----------------------------------------------------------"
     Write-Output "After Installing .NET 4.8 - It's required to restart the VM"
     Write-Output "Restarting in 10 Sec"
