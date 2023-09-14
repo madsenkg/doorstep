@@ -86,7 +86,7 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
         # Run Script file and remove it afterwards
         Write-Output ("Running script : {0} " -f $ScriptFileName)
         Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$ScriptFileName -WindowStyle Normal -Wait
-        Remove-Item .\$ScriptFileName -Force -Confirm:$true
+        Remove-Item .\$ScriptFileName -Force -Confirm:$false
 
         #Find the selected file in Zipfolder and Run the selected file
         $filename = Get-Childitem -Path .\zipfolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
@@ -96,7 +96,7 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
         }
 
         # Cleaning up files
-        Remove-item .\zipfolder -Recurse -Force -Confirm:$true
+        Remove-item .\zipfolder -Recurse -Force -Confirm:$false
     }
 
 } else {
