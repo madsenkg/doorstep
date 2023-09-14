@@ -90,12 +90,17 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
     Install-PackageProvider -Name NuGet -Scope AllUsers -Confirm:$false  -Force
     Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue
     $env:Path += ";%ALLUSERSPROFILE%\chocolatey\bin"
+
+    Write-Output "--- REQUIRED RESTART OF THE COMPUTER! --> IN 10 SECONDS ---"
+    Write-Output "-----------------------------------------------------------"
     Write-Output "After Installing .NET 4.8 - It's required to restart the VM"
     Write-Output "Restarting in 10 Sec"
     Write-Output "-----------------------------------------------------------"
-    Write-Output "Rerun the script again after restart"
+    Write-Output "You must rerun the script again after restart ! "
     Stop-Transcript
-    Restart-Computer -Delay 10
+
+    Start-Sleep -Seconds 10
+    Restart-Computer -Force 
 }
 
 Stop-Transcript
