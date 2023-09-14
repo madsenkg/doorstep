@@ -56,20 +56,18 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
     }
     Write-output "Input - OK !"
 
-    # Install Chocolatey and git
-    Write-output "Installing Chocolatey and GIT..."    
-    Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue
-    $env:Path += ";%ALLUSERSPROFILE%\chocolatey\bin"
+    # Install git
+    Write-output "Installing GIT..."    
     choco install git -y -v -acceptlicens
 
     # Creating script
     Write-output "Now creating script..."
     New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
     Add-Content -Path $ScriptFileName -Value ('Start-Transcript {0} -force' -f $LogFileName)
-    Add-Content -Path $ScriptFileName -Value 'Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1'
-    Add-Content -Path $ScriptFileName -Value 'refreshenv'
+#    Add-Content -Path $ScriptFileName -Value 'Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1'
+#    Add-Content -Path $ScriptFileName -Value 'refreshenv'
 #    Add-Content -Path $ScriptFileName -Value 'Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue'
-#    Add-Content -Path $ScriptFileName -Value '$env:Path += ";%ALLUSERSPROFILE%\chocolatey\bin"'    
+#    Add-Content -Path $ScriptFileName -Value '$env:Path += "%programdata%\chocolatey\bin;"'    
 #    Add-Content -Path $ScriptFileName -Value 'choco install git -y -v -acceptlicens'
     Add-Content -Path $ScriptFileName -Value ('Set-Location {0}' -f $TmpFolder)
     Add-Content -Path $ScriptFileName -Value 'md zipfolder' 
@@ -106,8 +104,9 @@ if ($DotNetVersion.version.Item(0) -gt 4.8) {
     $DotNetVersion
     Install-PackageProvider -Name NuGet -Scope AllUsers -Confirm:$false -Force
     Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue
-    $env:Path += ";%ALLUSERSPROFILE%\chocolatey\bin"
-   
+    $env:Path += "%programdata%\chocolatey\bin;"
+    Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1 -Force
+    refreshenv | Out-Null
     Write-Output "-----------------------------------------------------------"
     Write-Output "After Installing .NET 4.8 - It's required to restart the VM"
     Write-Output "Restarting in 10 Sec"
