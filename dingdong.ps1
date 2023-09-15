@@ -6,8 +6,9 @@ Clear-Host
 
 # Making sure .NET 4.8.x is installed
 $DotNetVersion = Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -Recurse | Get-ItemProperty -Name version -EA 0 | Where { $_.PSChildName -Match '^(?!S)\p{L}'} | Select PSChildName, version
+$Latestversion = $DotNetVersion | Measure-Object -Property version -Maximum
 
-if ($DotNetVersion.version.Item(0) -gt 4.8) {
+if ($Latestversion.Maximum -gt 4.8) {
     Write-output ".NET version is good !"
     $DotNetVersion
     Write-output "----------------------"
