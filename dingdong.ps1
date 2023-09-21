@@ -1,7 +1,6 @@
 #Copyrights CGI Demnark A/S
 #See Source : https://stackoverflow.com/questions/63506725/using-powershell-to-download-file-from-private-github-repository-using-oauth
 #Requires -RunAsAdministrator
-
 Clear-Host
 
 # Making sure .NET 4.8.x is installed
@@ -68,6 +67,7 @@ if ($Latestversion.Maximum -gt 4.8) {
     
     # Creating script
     Write-output "Now creating script..."
+<#
     New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
     Add-Content -Path $ScriptFileName -Value ('Start-Transcript {0} -force' -f $LogFileName)
     Add-Content -Path $ScriptFileName -Value ('Set-Location {0}' -f $TmpFolder)
@@ -81,11 +81,55 @@ if ($Latestversion.Maximum -gt 4.8) {
     Add-Content -Path $ScriptFileName -Value 'cd ..'
     Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -recurse -Confirm:$false -verbose'
     Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
+#>
+    $GitUrl= ("https://{0}:{1}@github.com/{2}.git" -f $d_repo.split('/')[0], $d_token, $d_repo)
 
+    $fileContent = @"
+    Start-Transcript $LogFileName -force
+    Set-Location $TmpFolder
+    md zipfolder
+    md gitrepo
+    git config --global --add safe.directory $TmpFolder/gitrepo
+    git clone --bare $GitUrl gitrepo
+    cd gitrepo
+    git archive -o $ZipFileName HEAD
+    Expand-Archive $ZipFileName -DestinationPath ..\zipfolder
+    cd ..
+    Remove-Item gitrepo -force -recurse -Confirm:$false -verbose
+    Stop-Transcript
+    "@
+    
+    Set-Content -Path $ScriptFileName -Value $fileContent
+    
+    # loop for 5 sek 5 times to make sure file is created
+    if (!$ScriptFileName) {
+        $maxAttempts = 5
+        $retryIntervalSeconds = 5
+        $attempts = 0
+    
+        if {$ScriptFileName) {
+            while ($attempts -lt $maxAttempts) {
+                if (Test-Path -Path $ScriptFileName -PathType Leaf) {
+                    break
+                } else {
+                    $attempts++
+                    Write-Host "File does not exist. Retry $attempts of $maxAttempts..."
+                    Start-Sleep -Seconds $retryIntervalSeconds
+                }
+            }
+            
+            if ($attempts -eq $maxAttempts) {
+                Write-Host "Max attempts reached. File not found. Please restart the script."
+            }
+        } else {
+            Write-Host "Something went wrong - please run script again !"
+        }
+    }
+    
     # Check if script file exists
-    if (Test-Path $ScriptFileName -PathType Leaf) {
+    if (Test-Path -Path $ScriptFileName -PathType Leaf) {
         # Run Script file and remove it afterwards
-        Write-Output ("Running script : {0} " -f $ScriptFileName)
+        Write-Output ("Running script : {0} " -f $ScriptFileName.Fullname)
         Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$ScriptFileName -WindowStyle Normal -Wait
         Remove-Item .\$ScriptFileName -Force -Confirm:$false
 
