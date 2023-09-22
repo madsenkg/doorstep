@@ -84,21 +84,22 @@ if ($Latestversion.Maximum -gt 4.8) {
 #>
     $GitUrl= ("https://{0}:{1}@github.com/{2}.git" -f $d_repo.split('/')[0], $d_token, $d_repo)
 
-    $fileContent = @"
-    Start-Transcript $LogFileName -force
-    Set-Location $TmpFolder
-    md zipfolder
-    md gitrepo
-    git config --global --add safe.directory $TmpFolder/gitrepo
-    git clone --bare $GitUrl gitrepo
-    cd gitrepo
-    git archive -o $ZipFileName HEAD
-    Expand-Archive $ZipFileName -DestinationPath ..\zipfolder
-    cd ..
-    Remove-Item gitrepo -force -recurse -Confirm:$false -verbose
-    Stop-Transcript
-    "@
-    
+    $fileContent = 
+@"
+Start-Transcript $LogFileName -force
+Set-Location $TmpFolder
+md zipfolder
+md gitrepo
+git config --global --add safe.directory $TmpFolder/gitrepo
+git clone --bare $GitUrl gitrepo
+cd gitrepo
+git archive -o $ZipFileName HEAD
+Expand-Archive $ZipFileName -DestinationPath ..\zipfolder
+cd ..
+Remove-Item gitrepo -force -recurse -Confirm:$false -verbose
+Stop-Transcript
+"@
+  
     Set-Content -Path $ScriptFileName -Value $fileContent
     
     # loop for 5 sek 5 times to make sure file is created
@@ -107,7 +108,7 @@ if ($Latestversion.Maximum -gt 4.8) {
         $retryIntervalSeconds = 5
         $attempts = 0
     
-        if {$ScriptFileName) {
+        if ($ScriptFileName) {
             while ($attempts -lt $maxAttempts) {
                 if (Test-Path -Path $ScriptFileName -PathType Leaf) {
                     break
