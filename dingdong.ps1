@@ -4,29 +4,31 @@
 Clear-Host
 
 # Making sure .NET 4.8.x is installed
-$DotNetVersion = Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -Recurse | Get-ItemProperty -Name version -EA 0 | Where { $_.PSChildName -Match '^(?!S)\p{L}'} | Select PSChildName, version
+$RequiredDotNetVersion = 4.8
+$DotNetVersion = Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -Recurse | Get-ItemProperty -Name version -EA 0 | Where-Object { $_.PSChildName -Match '^(?!S)\p{L}'} | Select-Object PSChildName, version
 $Latestversion = $DotNetVersion | Measure-Object -Property version -Maximum
 
-if ($Latestversion.Maximum -gt 4.8) {
+if ($Latestversion.Maximum -gt $RequiredDotNetVersion) {
     Write-output ".NET version is good !"
     $DotNetVersion
     Write-output "----------------------"
     
     # Create Tmp folder for the script
-    $TmpFolder      = ("C:\Temp\{0}.tmp"     -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
+    $TmpFolder = ("C:\Temp\{0}.tmp" -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
     New-Item -Path $TmpFolder -ItemType "directory" -Force -Confirm:$false | Out-Null
     Set-Location $TmpFolder
 
-    # start a log
+    # Start a log
     Start-Transcript -Append -Path ("_{0}_{1}.log" -f $env:COMPUTERNAME,(Get-Date -format yyyyMMdd))
     Write-output ("Temp-folder is : {0}" -f $TmpFolder)
-
+    
+    # Set filenames
     $TmpFileName    = [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName())
     $ScriptFileName = ("{0}.ps1" -f $TmpFileName)
     $LogFileName    = ("{0}.log" -f $TmpFileName)
     $ZipFileName    = ("{0}.zip" -f [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetRandomFileName()))
 
-    #Load Assembly
+    #Load Assembly for dialog
     [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 
     #Dialog
@@ -56,7 +58,7 @@ if ($Latestversion.Maximum -gt 4.8) {
     }
     Write-output "Validation - OK !"
     
-    # Install git
+    # Install Chocolatey and git then refresh environment
     Write-output "Installing Chocolatey and GIT... please wait !"
     Install-PackageProvider -Name NuGet -Scope CurrentUser -Confirm:$false -Force
     Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue
@@ -65,25 +67,9 @@ if ($Latestversion.Maximum -gt 4.8) {
     Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
     refreshenv
     
-    # Creating script
+    # Creating script 
     Write-output "Now creating script..."
-<#
-    New-item -Name $ScriptFileName -ItemType File -Force | Out-Null
-    Add-Content -Path $ScriptFileName -Value ('Start-Transcript {0} -force' -f $LogFileName)
-    Add-Content -Path $ScriptFileName -Value ('Set-Location {0}' -f $TmpFolder)
-    Add-Content -Path $ScriptFileName -Value 'md zipfolder' 
-    Add-Content -Path $ScriptFileName -Value 'md gitrepo'
-    Add-Content -Path $ScriptFileName -Value ('git config --global --add safe.directory {0}/gitrepo' -f $TmpFolder)
-    Add-Content -Path $ScriptFileName -Value ('git clone --bare https://{0}:{1}@github.com/{2}.git gitrepo' -f $d_repo.split('/')[0], $d_token, $d_repo)
-    Add-Content -Path $ScriptFileName -Value 'cd gitrepo'
-    Add-Content -Path $ScriptFileName -Value ('git archive -o {0} HEAD' -f $ZipFileName)
-    Add-Content -Path $ScriptFileName -Value ('Expand-Archive {0} -DestinationPath ..\zipfolder' -f $ZipFileName)
-    Add-Content -Path $ScriptFileName -Value 'cd ..'
-    Add-Content -Path $ScriptFileName -Value 'Remove-Item gitrepo -force -recurse -Confirm:$false -verbose'
-    Add-Content -Path $ScriptFileName -Value 'Stop-Transcript'
-#>
-    $GitUrl= ("https://{0}:{1}@github.com/{2}.git" -f $d_repo.split('/')[0], $d_token, $d_repo)
-
+    $GitUrl = ("https://{0}:{1}@github.com/{2}.git" -f $d_repo.split('/')[0], $d_token, $d_repo)
     $fileContent = 
 @"
 Start-Transcript $LogFileName -force
@@ -102,10 +88,10 @@ Stop-Transcript
   
     Set-Content -Path $ScriptFileName -Value $fileContent
     
-    # loop for 5 sek 5 times to make sure file is created
+    # loop for 3 sek 3 times to make sure file is created
     if (!$ScriptFileName) {
-        $maxAttempts = 5
-        $retryIntervalSeconds = 5
+        $maxAttempts = 3
+        $retryIntervalSeconds = 3
         $attempts = 0
     
         if ($ScriptFileName) {
@@ -136,7 +122,7 @@ Stop-Transcript
 
         #Find the selected file in Zipfolder and Run the selected file
         $filename = Get-Childitem -Path .\zipfolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
-        Write-Output ("Execute Install script : {0} " -f $filename)        
+        Write-Output ("Execute script : {0} " -f $filename)        
         If (Test-Path $filename -PathType Leaf) {
             Start-Process "powershell.exe" -Verb runAs -ArgumentList $filename -WindowStyle Normal -Wait
         }
@@ -155,8 +141,8 @@ Stop-Transcript
     Write-Output "-- Installing .NET 4.8 Package ---------------------------"    
     Start-Process $env:temp\dotnet.4.8.exe -ArgumentList "/norestart /passive" -Wait
     Write-Output "----------------------------------------------------------"
-    Write-Output "After Installing .NET 4.8 - It's required to restart the VM"
-    Write-Output "Restarting in 10 Sec"
+    Write-Output "After Installing DotNet - It's required to restart the VM."
+    Write-Output "             ... Restarting in 10 Seconds ...             "
     Write-Output "----------------------------------------------------------"
     Write-Output "** !!! PLEASE rerun the script again after restart. !!! **"
     Write-Output "----------------------------------------------------------"
