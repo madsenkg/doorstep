@@ -82,7 +82,7 @@ cd gitrepo
 git archive -o $ZipFileName HEAD
 Expand-Archive $ZipFileName -DestinationPath ..\zipfolder
 cd ..
-Remove-Item gitrepo -force -recurse -Confirm:$false -verbose
+Remove-Item gitrepo -force -recurse -Confirm:`$false -verbose
 Stop-Transcript
 "@
   
