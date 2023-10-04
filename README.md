@@ -9,7 +9,7 @@ To run the script - open a powershell (as admin) and copy/paste following comman
 
 `Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; invoke-expression((New-Object System.Net.WebClient).DownloadString('https://github.com/madsenkg/doorstep/raw/main/dingdong.ps1'))`
 
-When asked - paste in your PAT, the name of the repository ('<user>/<repo>') and the file you want to run.
+When asked - paste in your PAT, the name of the repository ('<user>'/'<repo>') and the file you want to run.
 The script will now download your private repo and execute a seleted powershell file. The default file is set to 'install.ps1'. if you don't want anything to be 'installed' you can leave your install.ps1-file blank!
 
 # How to use the this script
