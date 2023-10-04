@@ -1,5 +1,5 @@
 #Doorstep
-Doorstep is a repo that contains a varity of powershell scripts to that has the purpose to downloada private repro in GitHub.
+Doorstep is a repo that contains a varity of powershell scripts to that has the purpose to download a private repro in GitHub to any vm.
 
 #Purpose
 The purpose of this script is to download a private repo, unpack it and run a script with in the repo.
