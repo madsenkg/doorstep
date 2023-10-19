@@ -57,10 +57,15 @@ if ($Latestversion.Maximum -gt $RequiredDotNetVersion) {
         exit   
     }
     Write-output "Validation - OK !"
+
+    # Install module NuGet or PowerShellGet
+    Install-PackageProvider -Name NuGet -Scope CurrentUser -Confirm:$false -Force -ErrorVariable errstat -ErrorAction SilentlyContinue
+    if ($errstat) {
+        Install-Module PowershellGet -Force -Confirm:$false        
+    }
     
     # Install Chocolatey and git then refresh environment
     Write-output "Installing Chocolatey and GIT... please wait !"
-    Install-PackageProvider -Name NuGet -Scope CurrentUser -Confirm:$false -Force
     Invoke-Expression (new-object net.webclient).DownloadString("https://chocolatey.org/install.ps1") -WarningAction SilentlyContinue
     $env:Path += ";%PROGRAMDATA%\chocolatey\bin"
     choco install git -y -v -acceptlicens
