@@ -141,13 +141,14 @@ Stop-Transcript
     Write-Output "-- THIS MIGHT TAKE A MOMENT - PLEASE WAIT 5 min or more --"
     $DotNetVersion
     Write-Output "----------------------------------------------------------"
-    Write-Output "-- Download .NET 4.8 Package -----------------------------"
+    Write-Output "-- Download and install the .NET 4.8 Package -------------"
+    Write-Output "----------------------------------------------------------"
+    Write-Output "-- After the install - It is required to restart the vm --"
     Invoke-WebRequest https://go.microsoft.com/fwlink/?linkid=2088631 -OutFile $env:temp\dotnet.4.8.exe
-    Write-Output "-- Installing .NET 4.8 Package ---------------------------"    
     Start-Process $env:temp\dotnet.4.8.exe -ArgumentList "/norestart /passive" -Wait
     Write-Output "----------------------------------------------------------"
-    Write-Output "After Installing DotNet - It's required to restart the VM."
-    Write-Output "             ... Restarting in 10 Seconds ...             "
+    Write-Output "              ... Restarting in soon  ...                 "
+    Uninstall-AzureRm -Force -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
     Write-Output "----------------------------------------------------------"
     Write-Output "** !!! PLEASE rerun the script again after restart. !!! **"
     Write-Output "----------------------------------------------------------"
