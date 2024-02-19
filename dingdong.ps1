@@ -130,11 +130,11 @@ Stop-Transcript
         # Find 
         Write-Output ("2. Trying to find the file : {0} " -f $d_file)
         If (Test-Path $filename -PathType Leaf) {
-            Write-Output ("2. Executingmadsenkg script : {0} " -f $filename)
+            Write-Output ("3. Executing script : {0} " -f $filename)
             Start-Process "powershell.exe" -Verb runAs -ArgumentList $filename -WindowStyle Normal -Wait
         }
         else {
-            Write-Output ("2. Can't find script : {0} " -f $filename)
+            Write-Output ("3. Can't find script : {0} " -f $filename)
         }
         # Cleaning up files
         #Remove-item .\zipfolder -Recurse -Force -Confirm:$false
