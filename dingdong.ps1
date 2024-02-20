@@ -123,7 +123,7 @@ Stop-Transcript
         # Run Script file and remove it afterwards
         Write-Output ("1. Running script : {0} " -f $ScriptFileName)
         Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$ScriptFileName -WindowStyle Normal -Wait
-        #Remove-Item .\$ScriptFileName -Force -Confirm:$false
+        Remove-Item .\$ScriptFileName -Force -Confirm:$false
 
         #Find the selected file in Zipfolder and Run the selected file
         $filename = Get-Childitem -Path .\zipfolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
@@ -137,7 +137,7 @@ Stop-Transcript
             Write-Output ("3. Can't find script : {0} " -f $filename)
         }
         # Cleaning up files
-        #Remove-item .\zipfolder -Recurse -Force -Confirm:$false
+        Remove-item .\zipfolder -Recurse -Force -Confirm:$false
     }
 
 } else {
@@ -161,3 +161,5 @@ Stop-Transcript
 }
 
 Stop-Transcript
+cd..
+exit
