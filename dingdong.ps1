@@ -3,6 +3,12 @@
 #Requires -RunAsAdministrator
 Clear-Host
 
+# Switch to keep files
+[CmdletBinding()]
+  param(
+      [switch]$keepfiles
+  )
+
 # Making sure .NET 4.8.x is installed
 $RequiredDotNetVersion = 4.8
 $DotNetVersion = Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -Recurse | Get-ItemProperty -Name version -EA 0 | Where-Object { $_.PSChildName -Match '^(?!S)\p{L}'} | Select-Object PSChildName, version
@@ -123,7 +129,10 @@ Stop-Transcript
         # Run Script file and remove it afterwards
         Write-Output ("1. Running script : {0} " -f $ScriptFileName)
         Start-Process "powershell.exe" -Verb runAs -ArgumentList .\$ScriptFileName -WindowStyle Normal -Wait
-        Remove-Item .\$ScriptFileName -Force -Confirm:$false
+        
+        if (!$keepfiles.isPresent) {
+            Remove-Item .\$ScriptFileName -Force -Confirm:$false
+        }            
 
         #Find the selected file in Zipfolder and Run the selected file
         $filename = Get-Childitem -Path .\zipfolder -Recurse | Where-Object {($_.name -eq $d_file)} | ForEach-Object{$_.FullName}
@@ -136,8 +145,11 @@ Stop-Transcript
         else {
             Write-Output ("3. Can't find script : {0} " -f $filename)
         }
-        # Cleaning up files
-        Remove-item .\zipfolder -Recurse -Force -Confirm:$false
+        
+        if (!$keepfiles.isPresent) {
+            # Cleaning up files
+            Remove-item .\zipfolder -Recurse -Force -Confirm:$false
+        }            
     }
 
 } else {
