@@ -5,9 +5,13 @@ Clear-Host
 
 # Switch to keep files
 [CmdletBinding()]
-  param(
-      [switch]$keepfiles
-  )
+    param(
+        [switch]$keepfiles
+    )
+    
+if ($keepfiles.IsPresent) {
+    Write-output "keepfiles is ON!"
+}
 
 # Making sure .NET 4.8.x is installed
 $RequiredDotNetVersion = 4.8
