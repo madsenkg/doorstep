@@ -64,7 +64,7 @@ if ($Latestversion.Maximum -gt $RequiredDotNetVersion) {
 
     # Testing format of file
     if ([string]::IsNullOrEmpty($d_file)) {
-        if (!($d_file -match "[a-zA-Z0-9].ps1" ) -or ) {
+        if (!($d_file -match "[a-zA-Z0-9].ps1" )) {
             Write-Output "file string is not valid please use <filename>.ps1"
             Start-Sleep -Seconds 5
         }            
