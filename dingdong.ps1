@@ -44,24 +44,22 @@ if ($Latestversion.Maximum -gt $RequiredDotNetVersion) {
 
     #Dialog
     $d_token = [Microsoft.VisualBasic.Interaction]::InputBox("Github Token", "Enter your GitHub Token","<paste token here>") 
+    # Testing if any token value is entered
+    if ([string]::IsNullOrEmpty($d_token)) {
+        exit
+    }
+    
     $d_repo  = [Microsoft.VisualBasic.Interaction]::InputBox("Github repo", "Enter the name of the private GitHub Repository <User>/<repo>","<paste repo here>")
-    $d_file  = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", 'Install.ps1')
-
-    Write-output "Validating input..."
     # Testing format of repo
-    If ([string]::IsNullOrEmpty($d_token)) {
+    If ([string]::IsNullOrEmpty($d_repo)) {
         if (!($d_repo -match "[a-zA-Z0-9]\/[a-zA-Z0-9]" )) {
             Write-Output "Repo string is not valid please use <user>/<repo>"
             Start-Sleep -Seconds 5
         }
         exit
-    }
+    }    
 
-    # Testing if any value is entered
-    if ([string]::IsNullOrEmpty($d_repo)) {
-        exit
-    }
-
+    $d_file  = [Microsoft.VisualBasic.Interaction]::InputBox("Run this file", "Enter the filename", 'Install.ps1')
     # Testing format of file
     if ([string]::IsNullOrEmpty($d_file)) {
         if (!($d_file -match "[a-zA-Z0-9].ps1" )) {
@@ -71,12 +69,6 @@ if ($Latestversion.Maximum -gt $RequiredDotNetVersion) {
         exit
     }
     
-    # Validating 
-    if (!$d_token -or !$d_repo -or !$d_file) {
-        Write-Output ("Missing some info - aborting script")
-        Start-Sleep -Seconds 5
-        exit   
-    }
     Write-output "Validation - OK !"
 
     # Install module NuGet or PowerShellGet
