@@ -1,13 +1,14 @@
 #Copyrights CGI Demnark A/S
 #See Source : https://stackoverflow.com/questions/63506725/using-powershell-to-download-file-from-private-github-repository-using-oauth
 #Requires -RunAsAdministrator
-Clear-Host
-
 # Switch to keep files
 [CmdletBinding()]
     param(
         [switch]$keepfiles
     )
+
+# Start
+Clear-Host
     
 if ($keepfiles.IsPresent) {
     Write-output "keepfiles is ON!"
@@ -48,18 +49,28 @@ if ($Latestversion.Maximum -gt $RequiredDotNetVersion) {
 
     Write-output "Validating input..."
     # Testing format of repo
-    if (!($d_repo -match "[a-zA-Z0-9]\/[a-zA-Z0-9]" )) {
-        Write-Output "Repo string is not valid please use <user>/<repo>"
-        Start-Sleep -Seconds 5
+    If ([string]::IsNullOrEmpty($d_token)) {
+        if (!($d_repo -match "[a-zA-Z0-9]\/[a-zA-Z0-9]" )) {
+            Write-Output "Repo string is not valid please use <user>/<repo>"
+            Start-Sleep -Seconds 5
+        }
+        exit
+    }
+
+    # Testing if any value is entered
+    if ([string]::IsNullOrEmpty($d_repo)) {
         exit
     }
 
     # Testing format of file
-    if (!($d_file -match "[a-zA-Z0-9].ps1" )) {
-        Write-Output "file string is not valid please use <filename>.ps1"
-        Start-Sleep -Seconds 5
+    if ([string]::IsNullOrEmpty($d_file)) {
+        if (!($d_file -match "[a-zA-Z0-9].ps1" ) -or ) {
+            Write-Output "file string is not valid please use <filename>.ps1"
+            Start-Sleep -Seconds 5
+        }            
         exit
     }
+    
     # Validating 
     if (!$d_token -or !$d_repo -or !$d_file) {
         Write-Output ("Missing some info - aborting script")
